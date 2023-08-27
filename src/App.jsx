@@ -3,8 +3,7 @@ import './App.css'
 
 function App() {
   const [cashBoxes, setCashBox] = useState([[10],[0],[10, 7]])
-  const [newNumber, setNewNumber] = useState();
-  const ref = useRef();
+  const [newNumber, setNewNumber] = useState('');
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -15,19 +14,28 @@ function App() {
         } else if (item.length != 0) {
           return item[0] = item[0] - 1;}
       })
-      setCashBox(copy);}, 1000)
-
+      setCashBox(c => c = copy);}, 1000)
+    
     return () => clearInterval(timer);
-  }, [cashBoxes])
+  }, [])
+
+  function CashBoxes(props){
+    const cashBoxes = props.cashBoxes;
+    const allQueues = cashBoxes.map((queue, index) => {
+      const buyers = queue.map((item, index) => {
+        return <div className='buyer' key={index}>{item}</div>
+      })
+      return (<div className='queue' key={index}>
+      <div className='cashbox' key={index}>{index + 1}</div>
+      {buyers}
+      </div>);
+    })
+    return (<div className='allqueues'>{allQueues}</div>)
+  }
 
   function addBuyerToQueue(){
     const copy = Object.assign([], cashBoxes);
-    const sumsOfArrays = [];
-
-    copy.forEach((item) => {
-      const result = item.reduce((sum, current) => sum + current, 0);
-      sumsOfArrays.push(result);
-    })
+    const sumsOfArrays = copy.map((item) => item.reduce((sum, current) => sum + current, 0));
 
     let min = sumsOfArrays[0];
     let minIndex = 0;
@@ -37,37 +45,18 @@ function App() {
         minIndex = i;
     }}
 
-    ref.current.value = '';
+    setNewNumber('');
     copy[minIndex].push(newNumber);
     setCashBox(copy);
   }
 
-  function addNewNumber(event){
-    setNewNumber(Number(event.target.value));
-  }
-
   return (
     <main>
-        <input name='number' type='number' onChange={addNewNumber} ref={ref}></input>
+        <input name='number' type='number' value={newNumber} onChange={e => setNewNumber(Number(e.target.value))}></input>
         <button onClick={addBuyerToQueue}>Check</button>
       <CashBoxes cashBoxes={cashBoxes}></CashBoxes>
     </main>
   )
 }
 
-
-function CashBoxes(props){
-  const cashBoxes = props.cashBoxes;
-  const allQueues = cashBoxes.map((queue, index) => {
-    const buyers = queue.map((item, index) => {
-      return <div className='buyer' key={index}>{item}</div>
-    })
-    return (<div className='queue' key={index}>
-    <div className='cashbox' key={index}>{index + 1}</div>
-    {buyers}
-    </div>);
-  })
-  return (<div className='allqueues'>{allQueues}</div>)
-}
-console.clear = () => {}
 export default App
