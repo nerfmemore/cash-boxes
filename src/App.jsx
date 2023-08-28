@@ -7,17 +7,24 @@ function App() {
 
   useEffect(() => {
     const timer = setInterval(() => {
-      const copy = Object.assign([], cashBoxes);
-      copy.forEach((item) => {
-        if (item[0] <= 1){
-          item.shift();
-        } else if (item.length != 0) {
-          return item[0] = item[0] - 1;}
-      })
-      setCashBox(c => c = copy);}, 1000)
+      setCashBox(prev => prev.map((innerArr) => {
+        const queue = [...innerArr]
+        
+        if (queue.length == 0 ) {
+          return [];
+        }
+        
+        queue[0] -= 1;
+
+        if (queue[0] < 1) {
+          queue.shift()
+        }
+        return queue;
+      }));}, 1000)
     
     return () => clearInterval(timer);
   }, [])
+
 
   function CashBoxes(props){
     const cashBoxes = props.cashBoxes;
@@ -54,7 +61,7 @@ function App() {
     <main>
         <input name='number' type='number' value={newNumber} onChange={e => setNewNumber(Number(e.target.value))}></input>
         <button onClick={addBuyerToQueue}>Check</button>
-      <CashBoxes cashBoxes={cashBoxes}></CashBoxes>
+        <CashBoxes cashBoxes={cashBoxes}></CashBoxes>
     </main>
   )
 }
